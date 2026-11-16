@@ -260,6 +260,15 @@
     '#nlo tr.tot td{background:#1e3a8a;color:#fff} #nlo tr.tot td.k{background:#1e3a8a}',
     '#nlo input{width:58px;height:24px;text-align:right;font-size:12px;padding:2px 5px}',
     '@media (max-width:820px){.nlc{grid-template-columns:repeat(2,1fr)}.nk .n{font-size:18px}.dr{font-size:11px}}',
+    '@media (max-width:760px){.bd{overflow:auto;padding:8px 10px}.pane{flex:none}#nlo{overflow:visible;border:0;flex:none;min-height:0}.lg{display:none}.nlt{font-size:13px;margin-bottom:6px}' +
+      '.nlc{gap:6px}.nk{padding:6px 9px;font-size:11px}.nk .n{font-size:17px}.nk .n .pc{font-size:13px}.nk .s{font-size:10.5px}.tab{padding:5px 8px;font-size:11px}.hd{padding:9px 12px}}',
+    '.mk{border:1px solid #e5e7eb;border-left:5px solid #16a34a;border-radius:8px;padding:8px 10px;margin-bottom:8px;background:#fff;font-size:13px;color:#1f2937}',
+    '.mk.w-y{border-left-color:#f59e0b}.mk.w-r{border-left-color:#dc2626;background:#fff7f7}.mk.tt{background:#eef2fb;border-left-color:#1e3a8a}',
+    '.mk .h{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:800;font-size:15px;color:#111827}',
+    '.mk .h small{font-weight:600;font-size:12px;color:#4b5563}.mk .h b{color:#1e3a8a;font-size:16px}',
+    '.mk .r{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap}',
+    '.mk .r .l{min-width:118px}.mk .r .l b{color:#111827}.mk .f{margin-top:6px;color:#6b7280;font-size:12px;border-top:1px dashed #e5e7eb;padding-top:5px}',
+    '.mhint{font-size:11px;color:#6b7280;margin:0 0 8px}',
     '@media (max-width:820px){.cards{grid-template-columns:repeat(2,1fr)}}'].join('\n');
   let host, root;
   const state = { view: 'cn', from: '', to: '', preset: 'today', cn: '', warn: '', q: '', open: new Set(), open48: new Set(), data: null };
@@ -624,6 +633,24 @@
     root.querySelector('#nlc').innerHTML = '<div class="nlc"><div class="nk"><div>Năng lực – Tổng SP (ML + SPK)</div><div class="n">' + fmt(CT) + '</div><div class="s">ML ' + fmt(C[0]) + ' · SPK ' + fmt(C[1]) + '<br>' + nset + '/' + ks.length + ' kho đã nhập năng lực</div></div>' +
       S.map((o, i) => '<div class="nk"><div>' + LB[i] + '</div><div class="n">' + (has ? fmt(o.tong) + PC(pct(o.tong, CT)) : '–') + '</div><div class="s">' +
         (has ? 'ML ' + fmt(o.ml) + ' ' + PC(pct(o.ml, C[0])) + ' · SPK ' + fmt(o.spk) + ' ' + PC(pct(o.spk, C[1])) + '<br>' + fmt(o.so.size) + ' đơn thực' : 'Bấm ⚡ Tính toán') + '</div></div>').join('') + '</div>';
+    if (window.innerWidth < 760) {
+      const DGm = (p) => (p == null ? '' : p > 100 ? '<span class="pc p-r">Giao trong vòng 8h</span>' : '<span class="pc p-g">Giao trong vòng 6h</span>');
+      const N = (v) => (has ? fmt(v) : '-');
+      const card = (name, c, a, tot) => {
+        const o = a[0], pT = pct(o.tong, c[0] + c[1]), pM = pct(o.ml, c[0]), pS = pct(o.spk, c[1]);
+        const worst = has ? Math.max(pT || 0, pM || 0, pS || 0) : 0;
+        return '<div class="mk' + (tot ? ' tt' : worst > 100 ? ' w-r' : worst >= 80 ? ' w-y' : '') + '">' +
+          '<div class="h"><span>' + esc(name) + '</span><span><small>Hôm nay </small><b>' + N(o.tong) + '</b><small>/' + fmt(c[0] + c[1]) + '</small> ' + (has ? PC(pT) : '') + '</span></div>' +
+          '<div class="r"><span class="l">Máy lạnh <b>' + N(o.ml) + '</b>/' + fmt(c[0]) + ' ' + (has ? PC(pM) : '') + '</span>' + (has ? DGm(pM) : '') + '</div>' +
+          '<div class="r"><span class="l">SP khác <b>' + N(o.spk) + '</b>/' + fmt(c[1]) + ' ' + (has ? PC(pS) : '') + '</span>' + (has ? DGm(pS) : '') + '</div>' +
+          '<div class="f">Mai ' + dm(days[1]) + ': <b>' + N(a[1].tong) + '</b> (ML ' + N(a[1].ml) + ') · Kia ' + dm(days[2]) + ': <b>' + N(a[2].tong) + '</b> (ML ' + N(a[2].ml) + ')</div></div>';
+      };
+      let m = '<div class="mhint">Viền đỏ = có nhóm vượt năng lực, vàng = sát năng lực. Sửa năng lực từng kho trên máy tính (bảng đầy đủ).</div>';
+      ks.forEach((k) => { m += card(k, nlCap[k], agg[k], false); });
+      if (ks.length) m += card('TỔNG CỘNG', C, S, true); else m += '<div class="empty">Không có kho phù hợp.</div>';
+      out.innerHTML = m;
+      return;
+    }
     const Z = (v) => (has ? (v ? fmt(v) : '<span class="zz">-</span>') : '<span class="zz">-</span>');
     const DH = ['Hôm nay ' + dm(days[0]) + '<br>(tổng SP)', 'Ngày mai ' + dm(days[1]) + '<br>(chờ giao)', 'Ngày kia ' + dm(days[2]) + '<br>(chờ giao)'];
     const sub = '<th class="s3">Tổng SP</th><th>ML</th><th>SPK</th>';
@@ -645,6 +672,8 @@
     out.innerHTML = h + '</tbody></table>';
   }
   window.__tkdhOpen = (v) => { if (v) state.view = v; openPanel(); };
+  let nlRz = null, nlW = window.innerWidth < 760;
+  window.addEventListener('resize', () => { clearTimeout(nlRz); nlRz = setTimeout(() => { const w = window.innerWidth < 760; if (w !== nlW) { nlW = w; if (root && root.querySelector('#nlo')) renderNL(); } }, 200); });
   setInterval(() => { if (root && root.querySelector('#out') && state.data) render(); }, 60000);
   setInterval(ensureButton, 1000);
   ensureButton();
