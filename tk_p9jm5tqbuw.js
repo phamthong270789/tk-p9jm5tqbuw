@@ -136,6 +136,7 @@
     den: o.EarliesDeliveryTime || '', arr: isArrived(o), st: o.ShipmentOrderStatusName || '', done: !!isDone(o), cancel: isCancelled(o), ret: o.IsInputReturn === true, km: hasKM(o), ml: isML(o),
     xt: Number(o.CarrierTypeID) === 2, rt: Number(o.CarrierTypeID) === 2 ? String(o.ShipmentRouteID || '') : '', no: (o.IsOutputGoods || o.OutputGoodsDate) && !isCancelled(o) ? Number(o.TotalUnPaidInMoney) || 0 : 0, xg: String(o.OutputGoodsDate || ''), dd: String(o.EarliesDeliveryTime || o.CompletedDoServiceTime || '').slice(0, 10),
     tho: norm(String(o.DeliverUserFullNameList || '').split(/[,;]/)[0]), kho: KHO[Number(o.CoordinatorStoreID)] || '',
+    ht: String(o.CompletedDoServiceTime || o.DeliveryCompletionTime || ''),
   });
   async function fetchDay(day) {
     const isPast = day < ymd(today());
@@ -579,21 +580,22 @@
     try {
       nlSetMsg('Đang tải danh sách đơn…');
       await ensureApiReq();
-      const fd = range(shift(base, -1), shift(base, 3));
+      const fd = range(shift(base, -5), shift(base, 3));
+      const dayOf = (r) => ((r.done && r.ht) ? r.ht : r.exp).slice(0, 10);
       const byDay = await fetchDays(fd, (d, n) => nlSetMsg('Đang tải danh sách đơn… ' + d + '/' + n + ' ngày'));
       const uniq = new Map(); Object.values(byDay).flat().forEach((r) => uniq.set(r.id, r));
       const pick = [...uniq.values()].filter((r) => {
         if (r.cancel || r.ret || r.km || !r.kho) return false;
-        const d = r.exp.slice(0, 10), i = days.indexOf(d);
+        const d = dayOf(r), i = days.indexOf(d);
         return i === 0 || (i > 0 && !r.done);
       });
       const fail = await fetchSP(pick, (d, n) => nlSetMsg('Đang đếm sản phẩm từng đơn… ' + d + '/' + n));
       nl.base = base;
-      nl.data = { days, rows: pick.map((r) => ({ so: r.so, kho: r.kho, d: r.exp.slice(0, 10), sp: spCache[r.id] || null })) };
+      nl.data = { days, rows: pick.map((r) => ({ so: r.so, kho: r.kho, d: dayOf(r), sp: spCache[r.id] || null })) };
       const miss = nl.data.rows.filter((r) => !r.sp).length;
       renderNL();
       nlSetMsg('✔ Đã tải ' + vn(days[0]) + ' → ' + vn(days[2]) + ' · ' + ((Date.now() - t0) / 1000).toFixed(1) + ' giây · lúc ' + new Date().toLocaleTimeString('vi-VN') +
-        '. Tính theo sản phẩm; bỏ khuyến mãi, thẻ nhớ, bảo hành, dịch vụ ngoài, đơn hủy, nhập trả.' + (miss ? ' ⚠ ' + miss + ' đơn chưa lấy được số lượng, anh bấm Tính toán lại.' : ''), miss > 0);
+        '. Tính theo sản phẩm; đơn đã hoàn tất tính theo ngày hoàn tất, đơn chưa hoàn tất tính theo ngày hẹn giao; bỏ khuyến mãi, thẻ nhớ, bảo hành, dịch vụ ngoài, đơn hủy, nhập trả.' + (miss ? ' ⚠ ' + miss + ' đơn chưa lấy được số lượng, anh bấm Tính toán lại.' : ''), miss > 0);
     } catch (e) { nlSetMsg(e.message || String(e), true); }
     finally { nl.busy = false; const g = root && root.querySelector('#nlgo'); if (g) g.disabled = false; }
   }
