@@ -252,12 +252,12 @@
     '.nk .n .pc{font-size:17px;vertical-align:3px;margin-left:6px}',
     '.p-g{background:#dcfce7;color:#15803d}.p-y{background:#fef3c7;color:#b45309}.p-r{background:#fee2e2;color:#dc2626;border:1px solid #fca5a5}.p-0{color:#9ca3af}',
     '.lg{font-size:11px;color:#4b5563;margin:0 0 6px;line-height:1.7}',
-    '#nlo table th{background:#1e3a8a;color:#fff;border-color:#3b5bb5} #nlo th.g1{background:#2346a8} #nlo th.g2{background:#3157c9} #nlo th.g3{background:#6d28d9}',
-    '#nlo thead tr:nth-child(2) th{min-width:52px;width:52px;background:#eef2fb;color:#111827;border-color:#d1d5db}',
+    '#nlo table th{background:#002060;color:#fff;border-color:#4a5d8a} #nlo th.g0{background:#002060;color:#fff} #nlo th.g1{background:#0070C0;color:#FFFF00} #nlo th.g2{background:#00B0F0;color:#FFFF00} #nlo th.g3{background:#002060;color:#fff} #nlo thead th.s3{border-left:3px solid #FFFF00}',
+    '#nlo thead tr:nth-child(2) th{min-width:52px;width:52px;border-color:#4a5d8a}',
     '#nlo thead tr:nth-child(2) th.dg{min-width:124px;width:124px}',
-    '#nlo td.k,#nlo th.k{position:sticky;left:0;z-index:1;background:#fff;text-align:left;font-weight:700;min-width:96px} #nlo th.k{z-index:3;background:#1e3a8a}',
+    '#nlo td.k,#nlo th.k{position:sticky;left:0;z-index:1;background:#fff;text-align:left;font-weight:700;min-width:96px} #nlo th.k{z-index:3;background:#FFFF00;color:#000}',
     '#nlo td.b{font-weight:800;color:#1e3a8a} #nlo .s3{border-left:3px solid #1e3a8a}',
-    '#nlo tr.tot td{background:#1e3a8a;color:#fff} #nlo tr.tot td.k{background:#1e3a8a}',
+    '#nlo tr.tot td{background:#002060;color:#fff} #nlo tr.tot td.k{background:#002060}',
     '#nlo input{width:58px;height:24px;text-align:right;font-size:12px;padding:2px 5px}',
     '@media (max-width:820px){.nlc{grid-template-columns:repeat(2,1fr)}.nk .n{font-size:18px}.dr{font-size:11px}}',
     '@media (max-width:760px){.lg{display:none}}',
@@ -628,11 +628,11 @@
         (has ? 'ML ' + fmt(o.ml) + ' ' + PC(pct(o.ml, C[0])) + ' · SPK ' + fmt(o.spk) + ' ' + PC(pct(o.spk, C[1])) + '<br>' + fmt(o.so.size) + ' đơn thực' : 'Bấm ⚡ Tính toán') + '</div></div>').join('') + '</div>';
     const Z = (v) => (has ? (v ? fmt(v) : '<span class="zz">-</span>') : '<span class="zz">-</span>');
     const DH = ['Hôm nay ' + dm(days[0]) + '<br>(tổng SP)', 'Ngày mai ' + dm(days[1]) + '<br>(chờ giao)', 'Ngày kia ' + dm(days[2]) + '<br>(chờ giao)'];
-    const sub = '<th class="s3">Tổng SP</th><th>ML</th><th>SPK</th>';
-    let h = '<table><thead><tr><th rowspan="2" class="k">Chi nhánh</th><th colspan="3" class="s3">Năng lực<br>(SP/ngày)</th>' +
+    const sub = (c) => '<th class="s3 ' + c + '">Tổng SP</th><th class="' + c + '">ML</th><th class="' + c + '">SPK</th>';
+    let h = '<table><thead><tr><th rowspan="2" class="k">Chi nhánh</th><th colspan="3" class="s3 g0">Năng lực<br>(SP/ngày)</th>' +
       DH.map((t) => '<th colspan="3" class="s3 g1">' + t + '</th>').join('') +
-      '<th colspan="3" class="s3 g3">Tỷ lệ hôm nay ' + dm(days[0]) + '</th><th colspan="2" class="s3 g3" title="Tỷ lệ hôm nay ≤ 100% năng lực: giao trong vòng 6h; trên 100%: giao trong vòng 8h">Đánh giá năng lực ' + dm(days[0]) + '</th></tr><tr>' + sub.repeat(5) +
-      '<th class="s3 dg">ML</th><th class="dg">SPK</th></tr></thead><tbody>';
+      '<th colspan="3" class="s3 g2">Tỷ lệ hôm nay ' + dm(days[0]) + '</th><th colspan="2" class="s3 g3" title="Tỷ lệ hôm nay ≤ 100% năng lực: giao trong vòng 6h; trên 100%: giao trong vòng 8h">Đánh giá năng lực ' + dm(days[0]) + '</th></tr><tr>' + sub('g0') + sub('g1').repeat(3) + sub('g2') +
+      '<th class="s3 dg g3">ML</th><th class="dg g3">SPK</th></tr></thead><tbody>';
     if (!ks.length) h += '<tr><td colspan="18" class="empty">Không có kho phù hợp.</td></tr>';
     const DG6 = (p) => (p == null ? '<span class="zz">-</span>' : p > 100 ? '<span class="pc p-r">Giao trong vòng 8h</span>' : '<span class="pc p-g">Giao trong vòng 6h</span>');
     const rowH = (name, c, a, tot) => '<tr' + (tot ? ' class="tot"' : '') + '><td class="k">' + name + '</td>' +
