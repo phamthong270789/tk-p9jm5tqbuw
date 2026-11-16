@@ -604,6 +604,7 @@
       nl.data = { days, rows: pick.map((r) => ({ so: r.so, kho: r.kho, d: dayOf(r), sp: spCache[r.id] || null })) };
       const miss = nl.data.rows.filter((r) => !r.sp).length;
       renderNL();
+      if (window.innerWidth < 760) nlSetMsg('✔ Cập nhật lúc ' + new Date().toLocaleTimeString('vi-VN') + (miss ? ' · ⚠ ' + miss + ' đơn chưa lấy được số lượng, bấm Tính toán lại.' : ''), miss > 0); else
       nlSetMsg('✔ Đã tải ' + vn(days[0]) + ' → ' + vn(days[2]) + ' · ' + ((Date.now() - t0) / 1000).toFixed(1) + ' giây · lúc ' + new Date().toLocaleTimeString('vi-VN') +
         '. Tính theo sản phẩm; đơn đã hoàn tất tính theo ngày hoàn tất, đơn chưa hoàn tất tính theo ngày hẹn giao; bỏ khuyến mãi, thẻ nhớ, bảo hành, dịch vụ ngoài, đơn hủy, nhập trả.' + (miss ? ' ⚠ ' + miss + ' đơn chưa lấy được số lượng, anh bấm Tính toán lại.' : ''), miss > 0);
     } catch (e) { nlSetMsg(e.message || String(e), true); }
@@ -645,7 +646,7 @@
           '<div class="r"><span class="l">SP khác <b>' + N(o.spk) + '</b>/' + fmt(c[1]) + ' ' + (has ? PC(pS) : '') + '</span>' + (has ? DGm(pS) : '') + '</div>' +
           '<div class="f">Mai ' + dm(days[1]) + ': <b>' + N(a[1].tong) + '</b> (ML ' + N(a[1].ml) + ') · Kia ' + dm(days[2]) + ': <b>' + N(a[2].tong) + '</b> (ML ' + N(a[2].ml) + ')</div></div>';
       };
-      let m = '<div class="mhint">Viền đỏ = có nhóm vượt năng lực, vàng = sát năng lực. Sửa năng lực từng kho trên máy tính (bảng đầy đủ).</div>';
+      let m = '';
       ks.forEach((k) => { m += card(k, nlCap[k], agg[k], false); });
       if (ks.length) m += card('TỔNG CỘNG', C, S, true); else m += '<div class="empty">Không có kho phù hợp.</div>';
       out.innerHTML = m;
