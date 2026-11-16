@@ -257,7 +257,7 @@
     '#nlo thead tr:nth-child(2) th.dg{min-width:124px;width:124px}',
     '#nlo td.k,#nlo th.k{position:sticky;left:0;z-index:1;background:#fff;text-align:left;font-weight:700;min-width:96px} #nlo th.k{z-index:3;background:#002060;color:#fff}',
     '#nlo td.b{font-weight:800;color:#1e3a8a} #nlo .s3{border-left:3px solid #1e3a8a}',
-    '#nlo tr.tot td{background:#FFFF00;color:#000;font-weight:800} #nlo tr.tot td.k{background:#FFFF00} #nlo tr.tot td.b{color:#000}',
+    '#nlo tr.tot td{background:#FFFF00;color:#000;font-weight:800;position:sticky;z-index:2} #nlo tr.tot td.k{background:#FFFF00;z-index:4} #nlo tr.tot td.b{color:#000}',
     '#nlo input{width:58px;height:24px;text-align:right;font-size:12px;padding:2px 5px}',
     '@media (max-width:820px){.nlc{grid-template-columns:repeat(2,1fr)}.nk .n{font-size:18px}.dr{font-size:11px}}',
     '@media (max-width:760px){.lg{display:none}}',
@@ -645,6 +645,8 @@
     if (ks.length) h += rowH('TỔNG CỘNG', C, S, true);
     ks.forEach((k) => { h += rowH(k, nlCap[k], agg[k], false); });
     out.innerHTML = h + '</tbody></table>';
+    const r2 = out.querySelector('thead tr:nth-child(2)');
+    if (r2 && r2.cells[0]) { const tp = (parseFloat(getComputedStyle(r2.cells[0]).top) || 0) + r2.offsetHeight; out.querySelectorAll('tr.tot td').forEach((td) => { td.style.top = tp + 'px'; }); }
   }
   window.__tkdhOpen = (v) => { if (v) state.view = v; openPanel(); };
   setInterval(() => { if (root && root.querySelector('#out') && state.data) render(); }, 60000);
