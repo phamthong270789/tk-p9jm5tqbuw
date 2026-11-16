@@ -257,7 +257,7 @@
     '#nlo thead tr:nth-child(2) th.dg{min-width:124px;width:124px}',
     '#nlo td.k,#nlo th.k{position:sticky;left:0;z-index:1;background:#fff;text-align:left;font-weight:700;min-width:96px} #nlo th.k{z-index:3;background:#002060;color:#fff}',
     '#nlo td.b{font-weight:800;color:#1e3a8a} #nlo .s3{border-left:3px solid #1e3a8a}',
-    '#nlo tr.tot td{background:#002060;color:#fff} #nlo tr.tot td.k{background:#002060}',
+    '#nlo tr.tot td{background:#FFFF00;color:#000;font-weight:800} #nlo tr.tot td.k{background:#FFFF00} #nlo tr.tot td.b{color:#000}',
     '#nlo input{width:58px;height:24px;text-align:right;font-size:12px;padding:2px 5px}',
     '@media (max-width:820px){.nlc{grid-template-columns:repeat(2,1fr)}.nk .n{font-size:18px}.dr{font-size:11px}}',
     '@media (max-width:760px){.lg{display:none}}',
@@ -642,8 +642,8 @@
       (has ? '<td class="s3">' + PC(pct(a[0].tong, c[0] + c[1])) + '</td><td>' + PC(pct(a[0].ml, c[0])) + '</td><td>' + PC(pct(a[0].spk, c[1])) + '</td>' +
         '<td class="s3">' + DG6(pct(a[0].ml, c[0])) + '</td><td>' + DG6(pct(a[0].spk, c[1])) + '</td>'
         : '<td class="s3"><span class="zz">-</span></td><td><span class="zz">-</span></td><td><span class="zz">-</span></td><td class="s3"><span class="zz">-</span></td><td><span class="zz">-</span></td>') + '</tr>';
-    ks.forEach((k) => { h += rowH(k, nlCap[k], agg[k], false); });
     if (ks.length) h += rowH('TỔNG CỘNG', C, S, true);
+    ks.forEach((k) => { h += rowH(k, nlCap[k], agg[k], false); });
     out.innerHTML = h + '</tbody></table>';
   }
   window.__tkdhOpen = (v) => { if (v) state.view = v; openPanel(); };
