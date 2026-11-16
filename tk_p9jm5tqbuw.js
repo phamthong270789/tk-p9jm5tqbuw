@@ -254,6 +254,7 @@
     '.lg{font-size:11px;color:#4b5563;margin:0 0 6px;line-height:1.7}',
     '#nlo table th{background:#1e3a8a;color:#fff;border-color:#3b5bb5} #nlo th.g1{background:#2346a8} #nlo th.g2{background:#3157c9} #nlo th.g3{background:#6d28d9}',
     '#nlo thead tr:nth-child(2) th{min-width:52px;width:52px;background:#eef2fb;color:#111827;border-color:#d1d5db}',
+    '#nlo thead tr:nth-child(2) th.dg{min-width:124px;width:124px}',
     '#nlo td.k,#nlo th.k{position:sticky;left:0;z-index:1;background:#fff;text-align:left;font-weight:700;min-width:96px} #nlo th.k{z-index:3;background:#1e3a8a}',
     '#nlo td.b{font-weight:800;color:#1e3a8a} #nlo .s3{border-left:3px solid #1e3a8a}',
     '#nlo tr.tot td{background:#1e3a8a;color:#fff} #nlo tr.tot td.k{background:#1e3a8a}',
@@ -499,7 +500,7 @@
   const NL_STD = { 'Đông Anh': [20, 200], 'Sơn Tây': [7, 110], 'Hoài Đức': [15, 190], 'Chương Mỹ': [10, 90], 'Thường Tín': [10, 140], 'Tam Hiệp': [30, 340],
     'Văn Lâm': [15, 125], 'Hòa Bình': [8, 105], 'Phủ Lý': [10, 90], 'Nam Định': [15, 125], 'Hải Hậu': [8, 160], 'Ninh Bình': [20, 260],
     'Bỉm Sơn': [15, 180], 'Thọ Xuân': [10, 110], 'Thanh Hóa': [15, 250], 'Hoàng Mai': [10, 260], 'Vinh': [10, 160], 'Thanh Chương': [10, 160] };
-  const NL_ORDER = Object.keys(NL_STD);
+  const NL_ORDER = KHO_ORDER.filter((k) => k in NL_STD).concat(Object.keys(NL_STD).filter((k) => KHO_ORDER.indexOf(k) < 0));
   const NL_KEY = 'tk_nl_cap', SP_KEY = 'tk_nl_sp2', SP_TTL = 3 * 3600000, SP_KEEP = 4 * 86400000;
   const SV_RE = /dịch vụ|bảo hành|bảo trì|vệ sinh|vật tư|phiếu|khuyến mãi|thẻ nhớ|gói cước|công lắp|khung treo|giá đỡ|lõi lọc/i;
   let nlCap = {}; try { nlCap = JSON.parse(localStorage.getItem(NL_KEY) || '{}'); } catch (e) {}
@@ -628,13 +629,17 @@
     const sub = '<th class="s3">Tổng SP</th><th>ML</th><th>SPK</th>';
     let h = '<table><thead><tr><th rowspan="2" class="k">Chi nhánh</th><th colspan="3" class="s3">Năng lực<br>(SP/ngày)</th>' +
       DH.map((t) => '<th colspan="3" class="s3 g1">' + t + '</th>').join('') +
-      days.map((d, i) => '<th colspan="3" class="s3 g3">Tỷ lệ ' + ['hôm nay', 'ngày mai', 'ngày kia'][i] + ' ' + dm(d) + '</th>').join('') + '</tr><tr>' + sub.repeat(7) + '</tr></thead><tbody>';
-    if (!ks.length) h += '<tr><td colspan="22" class="empty">Không có kho phù hợp.</td></tr>';
+      '<th colspan="3" class="s3 g3">Tỷ lệ hôm nay ' + dm(days[0]) + '</th><th colspan="2" class="s3 g3" title="Tỷ lệ hôm nay ≤ 100% năng lực: giao trong vòng 6h; trên 100%: giao trong vòng 8h">Đánh giá năng lực ' + dm(days[0]) + '</th></tr><tr>' + sub.repeat(5) +
+      '<th class="s3 dg">ML</th><th class="dg">SPK</th></tr></thead><tbody>';
+    if (!ks.length) h += '<tr><td colspan="18" class="empty">Không có kho phù hợp.</td></tr>';
+    const DG6 = (p) => (p == null ? '<span class="zz">-</span>' : p > 100 ? '<span class="pc p-r">Giao trong vòng 8h</span>' : '<span class="pc p-g">Giao trong vòng 6h</span>');
     const rowH = (name, c, a, tot) => '<tr' + (tot ? ' class="tot"' : '') + '><td class="k">' + name + '</td>' +
       '<td class="s3 b">' + fmt(c[0] + c[1]) + '</td>' + (tot ? '<td>' + fmt(c[0]) + '</td><td>' + fmt(c[1]) + '</td>'
         : '<td><input type="number" min="0" data-k="' + esc(name) + '" data-i="0" value="' + c[0] + '"></td><td><input type="number" min="0" data-k="' + esc(name) + '" data-i="1" value="' + c[1] + '"></td>') +
       a.map((o) => '<td class="s3 b">' + Z(o.tong) + '</td><td>' + Z(o.ml) + '</td><td>' + Z(o.spk) + '</td>').join('') +
-      a.map((o) => has ? '<td class="s3">' + PC(pct(o.tong, c[0] + c[1])) + '</td><td>' + PC(pct(o.ml, c[0])) + '</td><td>' + PC(pct(o.spk, c[1])) + '</td>' : '<td class="s3"><span class="zz">-</span></td><td><span class="zz">-</span></td><td><span class="zz">-</span></td>').join('') + '</tr>';
+      (has ? '<td class="s3">' + PC(pct(a[0].tong, c[0] + c[1])) + '</td><td>' + PC(pct(a[0].ml, c[0])) + '</td><td>' + PC(pct(a[0].spk, c[1])) + '</td>' +
+        '<td class="s3">' + DG6(pct(a[0].ml, c[0])) + '</td><td>' + DG6(pct(a[0].spk, c[1])) + '</td>'
+        : '<td class="s3"><span class="zz">-</span></td><td><span class="zz">-</span></td><td><span class="zz">-</span></td><td class="s3"><span class="zz">-</span></td><td><span class="zz">-</span></td>') + '</tr>';
     ks.forEach((k) => { h += rowH(k, nlCap[k], agg[k], false); });
     if (ks.length) h += rowH('TỔNG CỘNG', C, S, true);
     out.innerHTML = h + '</tbody></table>';
