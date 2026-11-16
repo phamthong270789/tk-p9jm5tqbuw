@@ -624,7 +624,7 @@
     root.querySelector('#nlc').innerHTML = '<div class="nlc"><div class="nk"><div>Năng lực – Tổng SP (ML + SPK)</div><div class="n">' + fmt(CT) + '</div><div class="s">ML ' + fmt(C[0]) + ' · SPK ' + fmt(C[1]) + '<br>' + nset + '/' + ks.length + ' kho đã nhập năng lực</div></div>' +
       S.map((o, i) => '<div class="nk"><div>' + LB[i] + '</div><div class="n">' + (has ? fmt(o.tong) + PC(pct(o.tong, CT)) : '–') + '</div><div class="s">' +
         (has ? 'ML ' + fmt(o.ml) + ' ' + PC(pct(o.ml, C[0])) + ' · SPK ' + fmt(o.spk) + ' ' + PC(pct(o.spk, C[1])) + '<br>' + fmt(o.so.size) + ' đơn thực' : 'Bấm ⚡ Tính toán') + '</div></div>').join('') + '</div>';
-    const Z = (v) => (has ? (v ? fmt(v) : '<span class="zz">0</span>') : '<span class="zz">-</span>');
+    const Z = (v) => (has ? (v ? fmt(v) : '<span class="zz">-</span>') : '<span class="zz">-</span>');
     const DH = ['Hôm nay ' + dm(days[0]) + '<br>(tổng SP)', 'Ngày mai ' + dm(days[1]) + '<br>(chờ giao)', 'Ngày kia ' + dm(days[2]) + '<br>(chờ giao)'];
     const sub = '<th class="s3">Tổng SP</th><th>ML</th><th>SPK</th>';
     let h = '<table><thead><tr><th rowspan="2" class="k">Chi nhánh</th><th colspan="3" class="s3">Năng lực<br>(SP/ngày)</th>' +
